@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin:1;
+}
+
+/* Create two equal columns that floats next to each other */
+.column {
+    float: left;
+    width: 50%;
+    padding: 10px;
+    height: 300px; /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+</style>
+<body>
+
+<h2>UPS data From cloud</h2>
+
+<div class="row">
+  <div class="column" style="background-color:#aaa;">
+    <h2>UPS_1_DATA</h2>
+    <p id="demo"</p>
+  </div>
+  <div class="column" style="background-color:#bbb;">
+    <h2>UPS_2_DATA</h2>
+    <p id="data_2"</p>
+  </div>
+</div>
+
+
+<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.16.1.js"></script>
+
+<h2>HITACHI</h2>
+<script>
+
+var pubnub = new PubNub({
+    subscribeKey: "sub-c-7a8233b4-571c-11e7-97c6-02ee2ddab7fe",
+    publishKey: "pub-c-858eea9b-298b-4b46-bfe3-73e8b17164a7",
+
+})
+
+pubnub.addListener({
+    status: function(statusEvent) {
+        if (statusEvent.category === "PNConnectedCategory") {
+            var newState = {
+                new: 'state'
+            };
+            pubnub.setState(
+                { 
+                    state: newState 
+                }, 
+                function (status) {
+                    // handle state setting response
+                }
+            );
+        }
+    },
+    message: function(message) {
+        // handle message
+	console.log(message.message);
+	var msg = message.message[1];
+	var msg1 = message.message[3];
+	document.getElementById("demo").innerHTML = msg;
+	document.getElementById("data_2").innerHTML = msg1;
+
+    },
+    presence: function(presenceEvent) {
+        // handle presence
+    }
+})
+
+pubnub.subscribe({
+    channels: ['demo_py'],
+});
+</script>
+
+
+</body>
+</html>
